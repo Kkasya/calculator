@@ -13,17 +13,55 @@ class Calculator {
 
     };
     appendNumber(number) {
-    this.currentOperand =number;
+        if (!(number === '.' && this.currentOperand.includes('.'))) {
+            this.currentOperand = this.currentOperand.toString() + number.toString()
+        };
     };
     choseOperation(operation) {
-
-    };
+        if (this.previousOperand !== '') {
+            this.compute();
+            this.operation = operation;
+            this.previousOperand = this.previousOperand + this.currentOperand + this.operation;
+            this.currentOperand = '';
+        }
+   };
     compute () {
+        let computation;
+        const previous = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
 
+        if (isNaN(previous) ||isNaN(current)) return;
+        if (this.currentOperand === '') {
+            if (this.operation === 'Sqrt2') computation = Math.SQRT2;
+            if (this.operation === '+-') computation = -current;
+        } else {
+            switch (this.operation) {
+                case '+':
+                    computation = previous + current;
+                    break;
+                case '-':
+                    computation = previous - current;
+                    break;
+                case '*':
+                    computation = previous * current;
+                    break;
+                case '÷':
+                    computation = previous / current;
+                    break;
+                case '^':
+                    computation = previous ** current;
+                    break;
+                default:
+                    return;
+            }
+        }
+        this.currentOperand = computation;
+        this.operation = undefined;
+        this.previousOperand = '';
     };
     updateDisplay() {
         this.currentOperandText.innerText = this.currentOperand;
-
+        this.previousOperandText.innerText = this.previousOperand;
     };
 }
 
@@ -42,6 +80,18 @@ const calculator = new Calculator(previousOperandText, currentOperandText);
 numberButtons.forEach(button => {
     button.addEventListener('click', () => {
         calculator.appendNumber(button.innerText);
-        calculator.updateDisplay()
+        calculator.updateDisplay();
     })
 });
+
+operationButtons.forEach(operation => {
+    operation.addEventListener('click', () => {
+        calculator.choseOperation(operation.innerText);
+        calculator.updateDisplay();
+    })
+});
+
+resultButton.addEventListener('click', button => {
+    calculator.compute();
+    calculator.updateDisplay();
+})
