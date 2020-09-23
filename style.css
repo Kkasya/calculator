@@ -29,6 +29,10 @@ body {
     background-color: #E7FFD3;
     opacity: 0.9;
 }
+.span-half {
+    width: 100px;
+    height: 50px;
+}
 .output {
     grid-column: 1 / -1;
     background-color: black;
