@@ -2,20 +2,25 @@ class Calculator {
     constructor(previousOperandText, currentOperandText) {
         this.previousOperandText = previousOperandText;
         this.currentOperandText = currentOperandText;
+        this.endResult = false;
         this.clear();
     };
     clear(){
         this.currentOperand = '';
         this.previousOperand = '';
         this.operation = undefined;
+        this.unary = undefined;
     };
     delete() {
         this.currentOperand = this.currentOperand.toString().slice(0, -1);
     };
     appendNumber(number) {
+        if (this.endResult === true && this.operation === undefined) this.clear();
+        this.endResult = false;
         if (!(number === '.' && this.currentOperand.includes('.'))) {
             this.currentOperand = this.currentOperand.toString() + number.toString()
         };
+
     };
     choseOperation(operation) {
             if (this.currentOperand === '') return;
@@ -53,21 +58,19 @@ class Calculator {
         this.operation = undefined;
         this.previousOperand = '';
     };
-    compareUnary(operation) {
+    compareUnary(unary) {
         let computationUnary;
-        this.operation = operation;
+        this.unary = unary;
         const current = parseFloat(this.currentOperand);
         if (isNaN(current)) return;
-        if (this.operation === 'Sqrt') {
+        if (this.unary === 'Sqrt') {
             computationUnary = Math.sqrt(current);
-            this.currentOperand = computationUnary;
-            this.operation = undefined;
         }
-        if (this.operation === '+-') {
+        if (this.unary === '+-') {
             computationUnary = -current;
-            this.currentOperand = computationUnary;
-            this.operation = undefined;
-        }
+            }
+        this.currentOperand = computationUnary;
+        this.unary = undefined;
     };
     updateDisplay() {
         this.currentOperandText.innerText = this.currentOperand;
@@ -104,6 +107,7 @@ operationButtons.forEach(operation => {
 resultButton.addEventListener('click', button => {
     calculator.compute();
     calculator.updateDisplay();
+    calculator.endResult = true;
 })
 
 clearButton.addEventListener('click', button => {
@@ -116,9 +120,9 @@ deleteButton.addEventListener('click', button => {
     calculator.updateDisplay();
 })
 
-unaryButtons.forEach(operation => {
-    operation.addEventListener('click', () => {
-        calculator.compareUnary(operation.innerText);
+unaryButtons.forEach(unary => {
+    unary.addEventListener('click', () => {
+        calculator.compareUnary(unary.innerText);
         calculator.updateDisplay();
     })
 });
