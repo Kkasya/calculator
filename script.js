@@ -10,7 +10,7 @@ class Calculator {
         this.operation = undefined;
     };
     delete() {
-
+        this.currentOperand = this.currentOperand.toString().slice(0, -1);
     };
     appendNumber(number) {
         if (!(number === '.' && this.currentOperand.includes('.'))) {
@@ -18,24 +18,19 @@ class Calculator {
         };
     };
     choseOperation(operation) {
-        if (this.previousOperand !== '') {
-            this.compute();
+            if (this.currentOperand === '') return;
+            if (this.previousOperand !== '') this.compute();
             this.operation = operation;
             this.previousOperand = this.previousOperand + this.currentOperand + this.operation;
             this.currentOperand = '';
-        }
    };
-    compute () {
+    compute() {
         let computation;
         const previous = parseFloat(this.previousOperand);
         const current = parseFloat(this.currentOperand);
 
         if (isNaN(previous) ||isNaN(current)) return;
-        if (this.currentOperand === '') {
-            if (this.operation === 'Sqrt2') computation = Math.SQRT2;
-            if (this.operation === '+-') computation = -current;
-        } else {
-            switch (this.operation) {
+           switch (this.operation) {
                 case '+':
                     computation = previous + current;
                     break;
@@ -54,10 +49,25 @@ class Calculator {
                 default:
                     return;
             }
-        }
         this.currentOperand = computation;
         this.operation = undefined;
         this.previousOperand = '';
+    };
+    compareUnary(operation) {
+        let computationUnary;
+        this.operation = operation;
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(current)) return;
+        if (this.operation === 'Sqrt') {
+            computationUnary = Math.sqrt(current);
+            this.currentOperand = computationUnary;
+            this.operation = undefined;
+        }
+        if (this.operation === '+-') {
+            computationUnary = -current;
+            this.currentOperand = computationUnary;
+            this.operation = undefined;
+        }
     };
     updateDisplay() {
         this.currentOperandText.innerText = this.currentOperand;
@@ -71,7 +81,7 @@ const operationButtons = document.querySelectorAll('[data-operation]');
 const resultButton = document.querySelector('[data-result]');
 const deleteButton = document.querySelector('[data-delete]');
 const clearButton = document.querySelector('[data-clear]');
-const minusButton = document.querySelector('[data-minus]');
+const unaryButtons = document.querySelectorAll('[data-unary]');
 const previousOperandText = document.querySelector('[data-previous]');
 const currentOperandText = document.querySelector('[data-current]');
 
@@ -95,3 +105,20 @@ resultButton.addEventListener('click', button => {
     calculator.compute();
     calculator.updateDisplay();
 })
+
+clearButton.addEventListener('click', button => {
+    calculator.clear();
+    calculator.updateDisplay();
+})
+
+deleteButton.addEventListener('click', button => {
+    calculator.delete();
+    calculator.updateDisplay();
+})
+
+unaryButtons.forEach(operation => {
+    operation.addEventListener('click', () => {
+        calculator.compareUnary(operation.innerText);
+        calculator.updateDisplay();
+    })
+});
