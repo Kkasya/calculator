@@ -124,5 +124,6 @@ unaryButtons.forEach(unary => {
     unary.addEventListener('click', () => {
         calculator.compareUnary(unary.innerText);
         calculator.updateDisplay();
+        calculator.endResult = true;
     })
 });
